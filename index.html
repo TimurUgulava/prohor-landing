@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Прохор — как собрать AI-сотрудника в команду</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b; --ink:#f3f1ec; --mut:#8d8d88; --mut2:#62625e;
+  --orange:#fe9901; --orange2:#ff7a1a; --bad:#c8675b;
+  --line:rgba(255,255,255,.10); --card:rgba(255,255,255,.035);
+  --pad:110px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
+body{background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+.grain{position:fixed;inset:0;z-index:80;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ===== nav dots ===== */
+.dots{position:fixed;right:38px;top:50%;transform:translateY(-50%);z-index:70;display:flex;flex-direction:column;gap:14px}
+.dots a{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);transition:.25s;display:block}
+.dots a.on{background:var(--orange);transform:scale(1.35)}
+
+/* ===== screen ===== */
+.screen{position:relative;min-height:100vh;width:100%;display:flex;align-items:center;
+  padding:64px var(--pad);overflow:hidden;scroll-snap-align:start}
+.inner{position:relative;z-index:3;width:100%;max-width:1680px;margin:0 auto}
+
+.eyebrow{display:inline-flex;align-items:center;gap:14px;font-weight:700;font-size:15px;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--orange)}
+.eyebrow::before{content:"";width:38px;height:2px;background:var(--orange)}
+
+h1.big{font-family:'Unbounded';font-weight:800;line-height:.98;letter-spacing:-.01em;color:var(--ink)}
+.uline{position:relative;white-space:nowrap}
+.uline svg{position:absolute;left:-4px;right:-10px;bottom:-14px;height:22px;width:calc(100% + 16px)}
+
+.pills{display:flex;flex-wrap:wrap;gap:12px}
+.pill{font-size:15px;font-weight:600;color:var(--ink);padding:9px 17px;border:1px solid var(--line);
+  border-radius:999px;background:var(--card);white-space:nowrap}
+.pill b{color:var(--orange);font-weight:700}
+
+.slidemark{position:absolute;left:var(--pad);bottom:42px;z-index:6;display:flex;align-items:center;gap:15px;
+  color:var(--mut2);font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.slidemark .num{color:var(--ink);font-family:'Unbounded';font-weight:700;font-size:17px;letter-spacing:0}
+
+/* фигуры персонажей: вырезаны (прозрачный фон), лёгкая тень для объёма */
+.figure{filter:drop-shadow(0 22px 48px rgba(0,0,0,.5))}
+
+/* glow */
+.glow{position:absolute;z-index:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(254,153,1,.20) 0%, rgba(254,122,26,.07) 36%, rgba(10,10,11,0) 66%)}
+
+/* chalk doodles */
+.doodle{position:absolute;z-index:1;opacity:.5;pointer-events:none;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ S1 · TITLE ============ */
+#s1{flex-direction:column;justify-content:center;text-align:center;padding-top:120px}
+.logos{position:absolute;top:46px;left:var(--pad);right:var(--pad);display:flex;justify-content:space-between;align-items:center;z-index:6}
+.logos img{display:block;width:auto}
+.logos .logo-dv{height:52px;opacity:.96}
+.logos .logo-ms{height:34px;opacity:.96}
+#s1 .kicker{margin-bottom:30px}
+#s1 h1{font-size:62px;max-width:1380px;margin:0 auto}
+#s1 h1 .o{color:var(--orange)}
+#s1 .slogan{margin-top:54px;display:inline-flex;align-items:center;gap:14px;padding:16px 30px;
+  border:1px solid rgba(254,153,1,.4);border-radius:999px;background:rgba(254,153,1,.06)}
+#s1 .slogan .no{font-family:'Unbounded';font-weight:800;color:var(--orange);font-size:21px;letter-spacing:.02em}
+#s1 .slogan .rest{color:#cfcdc7;font-size:18px;font-weight:500}
+
+/* ============ S2 · SPEAKER ============ */
+#s2 .grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:40px;align-items:center}
+#s2 .figwrap{position:relative;height:92vh;max-height:980px;display:flex;align-items:center;justify-content:center}
+#s2 .figwrap img{height:100%;width:auto;object-fit:contain}
+#s2 h1{font-size:92px;margin:18px 0 40px}
+#s2 ul{list-style:none;display:flex;flex-direction:column;gap:20px}
+#s2 li{display:flex;align-items:center;gap:16px;font-size:27px;font-weight:500;color:#e7e5df}
+#s2 li .ck{flex:none;width:30px;height:30px;color:var(--orange)}
+#s2 li .hl{color:var(--orange);font-weight:700;text-transform:uppercase;text-decoration:none}
+#s2 li a.hl:hover{text-decoration:underline}
+
+/* ============ S3 · PROHOR ============ */
+#s3 .grid{display:grid;grid-template-columns:1.05fr .85fr;gap:36px;align-items:center}
+#s3 .figwrap{position:relative;height:88vh;max-height:920px;order:2;cursor:pointer}
+#s3 .figwrap img{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:auto;object-fit:contain;transition:opacity .45s ease}
+#s3 .figwrap .smile{opacity:0}
+#s3 .figwrap:hover .base{opacity:0}
+#s3 .figwrap:hover .smile{opacity:1}
+#s3 h1{font-size:104px;margin:24px 0 0}
+#s3 .lead{margin-top:38px;font-size:25px;line-height:1.5;color:#cfcdc7;font-weight:500;max-width:680px}
+#s3 .lead+.lead{margin-top:22px}
+#s3 .lead .hl{color:#fff;font-weight:700}
+#s3 .terms{margin-top:40px}
+#s3 .terms .pill{font-size:16px}
+
+/* ============ S4 · PIPELINE ============ */
+#s4 .head{margin-bottom:18px}
+#s4 h1{font-size:58px;line-height:1.0;margin-top:14px}
+#s4 h1 .o{color:var(--orange)}
+#s4 .carousel{position:relative;height:452px;margin-top:4px}
+#s4 .cstep{position:absolute;left:50%;top:50%;width:442px;box-sizing:border-box;background:#151413;
+  border:1px solid var(--line);border-radius:24px;padding:40px 36px;cursor:pointer;will-change:transform,opacity;
+  transition:transform .5s cubic-bezier(.34,.05,.2,1),opacity .5s ease,border-color .3s ease,background .3s ease}
+#s4 .cstep.active{border-color:var(--orange);background:rgba(254,153,1,.07);box-shadow:0 34px 80px rgba(0,0,0,.55)}
+#s4 .cstep .n{font-family:'Unbounded';font-weight:800;font-size:27px;width:66px;height:66px;border-radius:50%;
+  background:var(--orange);color:#0a0a0b;display:flex;align-items:center;justify-content:center;margin-bottom:26px}
+#s4 .cstep h3{font-family:'Unbounded';font-weight:700;font-size:33px;color:#fff;margin-bottom:16px}
+#s4 .cstep p{font-size:22px;line-height:1.45;color:var(--mut)}
+#s4 .cstep .out{margin-top:20px;font-size:19px;line-height:1.4;color:var(--orange);font-weight:600;opacity:0;max-height:0;transition:opacity .4s ease,max-height .4s ease;overflow:hidden}
+#s4 .cstep.active .out{opacity:1;max-height:140px}
+#s4 .cnav{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:30px}
+#s4 .cnav button{width:54px;height:54px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.04);
+  color:#fff;font-size:20px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+#s4 .cnav button:hover{border-color:var(--orange);color:var(--orange)}
+#s4 .cdots{display:flex;gap:11px}
+#s4 .cdots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);cursor:pointer;transition:.2s}
+#s4 .cdots i.on{background:var(--orange);transform:scale(1.35)}
+
+/* ============ S5 · PROMPT vs SKILL ============ */
+#s5 .head{margin-bottom:24px}
+#s5 h1{font-size:64px;margin-top:12px}
+#s5 .toggle{display:inline-flex;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:6px;gap:6px;margin:18px 0 22px}
+#s5 .toggle button{font-family:'Unbounded';font-weight:700;font-size:18px;letter-spacing:.02em;color:var(--mut);
+  background:none;border:none;padding:14px 38px;border-radius:999px;cursor:pointer;transition:.25s}
+#s5 .toggle button.act{color:#0a0a0b;background:var(--orange)}
+#s5 .toggle button.act.p{background:#d8d6d0;color:#0a0a0b}
+#s5 .def{font-size:23px;font-weight:600;color:#fff;max-width:1000px;margin-bottom:22px;min-height:58px;line-height:1.4}
+#s5 .def .tag{font-family:'Unbounded';font-weight:800;margin-right:12px}
+#s5 .def.p .tag{color:#d8d6d0}#s5 .def.s .tag{color:var(--orange)}
+#s5 table{width:100%;border-collapse:collapse}
+#s5 tr{border-top:1px solid var(--line)}#s5 tr:last-child{border-bottom:1px solid var(--line)}
+#s5 td{padding:15px 20px;font-size:19px;vertical-align:middle;transition:.25s}
+#s5 .lbl{font-family:'Unbounded';font-weight:700;font-size:18px;color:#fff;width:230px}
+#s5 .cp,#s5 .cs{width:38%;color:var(--mut);font-weight:500}
+#s5 .cp .ic,#s5 .cs .ic{font-weight:800;margin-right:12px}
+#s5 .cp .ic{color:var(--bad)}#s5 .cs .ic{color:var(--orange)}
+#s5[data-state="skill"] .cs{color:#fff;font-weight:600}
+#s5[data-state="skill"] .cp{opacity:.34}
+#s5[data-state="prompt"] .cp{color:#eceae4;font-weight:600}
+#s5[data-state="prompt"] .cs{opacity:.34}
+
+/* ============ S6 · UNDER THE HOOD ============ */
+#s6 .head{margin-bottom:34px}
+#s6 h1{font-size:62px;margin-top:18px}
+#s6 h1 .o{color:var(--orange)}
+#s6 .sub{margin-top:20px;font-size:21px;color:var(--mut);max-width:900px;line-height:1.5}
+#s6 .sub b{color:#fff;font-weight:700}
+#s6 .ide{display:grid;grid-template-columns:.95fr 1.05fr;gap:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.02);height:44vh;min-height:360px}
+#s6 .tree{padding:22px 16px;overflow:auto;border-right:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:16px}
+#s6 .node{padding:7px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:9px;color:#d7d5cf;transition:.15s;white-space:nowrap}
+#s6 .node:hover{background:rgba(255,255,255,.05)}
+#s6 .node.sel{background:rgba(254,153,1,.14);color:#fff}
+#s6 .node.dir{color:#fff;font-weight:500}
+#s6 .node.file{padding-left:34px;color:#b9b7b1}
+#s6 .node .ico{width:17px;text-align:center;opacity:.9}
+#s6 .node.dir .ico{color:var(--orange)}
+#s6 .kids{overflow:hidden}
+#s6 .kids.closed{display:none}
+#s6 .detail{padding:40px 44px;display:flex;flex-direction:column;justify-content:center}
+#s6 .detail .fname{font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--orange);margin-bottom:8px;word-break:break-all}
+#s6 .detail .ftype{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut2);font-weight:700;margin-bottom:26px}
+#s6 .detail .fdesc{font-size:25px;line-height:1.5;color:#e7e5df;font-weight:500}
+#s6 .counter{margin-top:22px;display:flex;gap:40px}
+#s6 .counter .c{font-family:'Unbounded';font-weight:800;font-size:30px;color:var(--orange)}
+#s6 .counter .c span{display:block;font-family:'Manrope';font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut2);margin-top:4px}
+
+/* ============ S7 · 3 ПУТИ (клик-прорастание) ============ */
+.hint{margin-top:16px;font-size:16px;color:var(--mut2);font-weight:600}
+#s7 .head{margin-bottom:38px}
+#s7 h1{font-size:62px;line-height:1.0;margin-top:20px}
+#s7 h1 .o{color:var(--orange)}
+#s7 .ways{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:start}
+#s7 .way{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:40px 34px;cursor:pointer;transition:border-color .3s ease,background .3s ease,transform .3s ease}
+#s7 .way:hover{transform:translateY(-4px)}
+#s7 .way.open{border-color:var(--orange);background:rgba(254,153,1,.06)}
+#s7 .way .n{font-family:'Unbounded';font-weight:800;font-size:25px;width:60px;height:60px;border-radius:50%;background:var(--orange);color:#0a0a0b;display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+#s7 .way h3{font-family:'Unbounded';font-weight:700;font-size:29px;color:#fff;margin-bottom:4px}
+#s7 .way .tag{font-size:17px;color:var(--orange);font-weight:700;margin-bottom:26px}
+#s7 .way ul{list-style:none;display:flex;flex-direction:column;gap:15px;min-height:122px}
+#s7 .way li{font-size:19px;line-height:1.4;color:#cbc9c3;padding-left:22px;position:relative;font-weight:500;opacity:0;transform:translateX(-12px);transition:opacity .45s ease,transform .45s ease}
+#s7 .way li::before{content:"—";position:absolute;left:0;color:var(--orange);font-weight:700}
+#s7 .way.open li{opacity:1;transform:none}
+#s7 .way.open li:nth-child(1){transition-delay:.1s}
+#s7 .way.open li:nth-child(2){transition-delay:.38s}
+#s7 .way.open li:nth-child(3){transition-delay:.66s}
+
+/* ============ SD1 · ДАВИД (кто) ============ */
+#sd1 .grid{display:grid;grid-template-columns:1.05fr .82fr;gap:40px;align-items:center}
+#sd1 .figwrap{position:relative;height:88vh;max-height:920px;display:flex;align-items:flex-end;justify-content:center;order:2}
+#sd1 .figwrap img{height:100%;width:auto;object-fit:contain;filter:drop-shadow(0 22px 48px rgba(0,0,0,.5))}
+#sd1 h1{font-size:74px;line-height:1.03;margin:22px 0 0}
+#sd1 h1 .o{color:var(--orange)}
+#sd1 .sub{margin-top:32px;font-size:30px;font-weight:700;color:#fff}
+#sd1 .lead{margin-top:22px;font-size:23px;line-height:1.5;color:#cfcdc7;font-weight:500;max-width:660px}
+#sd1 .lead .hl{color:var(--orange);font-weight:700}
+
+/* ============ SD2 · ДАВИД (как создать) ============ */
+#sd2 .head{margin-bottom:40px}
+#sd2 h1{font-size:64px;margin-top:14px}
+#sd2 h1 .o{color:var(--orange)}
+#sd2 .promptbox{position:relative;max-width:1180px;background:rgba(254,153,1,.04);border:2px solid rgba(254,153,1,.38);border-radius:26px;padding:50px 52px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+#sd2 .promptbox .plabel{position:absolute;top:-14px;left:38px;background:var(--orange);color:#0a0a0b;font-family:'Unbounded';font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:999px}
+#sd2 .promptbox p{font-size:25px;line-height:1.62;color:#e7e5df;font-weight:500}
+#sd2 .promptbox b{color:#fff;font-weight:700}
+#sd2 .promptbox .hl{color:var(--orange);font-weight:700}
+#sd2 .arch{margin-top:28px;font-size:21px;color:var(--mut);font-weight:600}
+#sd2 .arch .hl{color:var(--orange);font-weight:800;font-family:'Unbounded'}
+
+/* ============ S8 · CTA ============ */
+#s8 .grid{display:grid;grid-template-columns:.8fr 1.05fr;gap:44px;align-items:center}
+#s8 .figwrap{position:relative;height:70vh;max-height:740px;display:flex;align-items:center;justify-content:center}
+#s8 .figwrap img{height:100%;width:auto;object-fit:contain}
+#s8 h1{font-size:72px;max-width:680px}
+#s8 h1 .o{color:var(--orange)}
+#s8 .qrwrap{margin-top:42px;display:flex;align-items:center;gap:34px}
+#s8 .qr{background:#fff;padding:22px;border-radius:22px;width:288px;height:288px;flex:none;box-shadow:0 0 0 1px rgba(254,153,1,.5),0 24px 70px rgba(0,0,0,.6)}
+#s8 .qr img{width:100%;height:100%;display:block}
+#s8 .cta-sub{font-size:27px;line-height:1.4;color:#cfcdc7;font-weight:600}
+#s8 .cta-sub .o{color:var(--orange);font-weight:700}
+#s8 .chan{margin-top:10px;font-family:'Unbounded';font-weight:700;font-size:19px;color:#fff;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<nav class="dots" id="dots"></nav>
+
+<!-- ===================== 01 · TITLE ===================== -->
+<section class="screen" id="s1">
+  <div class="glow" style="width:1300px;height:1300px;left:50%;top:46%;transform:translate(-50%,-50%)"></div>
+  <svg class="doodle" style="top:140px;left:130px;width:70px;height:70px" viewBox="0 0 50 50"><path d="M25 4l5 14 14 1-11 9 4 14-12-8-12 8 4-14L10 19l14-1z"/></svg>
+  <svg class="doodle" style="bottom:120px;right:170px;width:90px;height:50px" viewBox="0 0 90 50"><path d="M6 40 C30 8 60 8 84 30 M84 30 l-14 2 M84 30 l-6-12"/></svg>
+  <svg class="doodle" style="top:200px;right:230px;width:34px;height:34px" viewBox="0 0 30 30"><path d="M15 2v26M2 15h26"/></svg>
+
+  <div class="logos">
+    <img class="logo-dv" src="assets/logo-dvizhenie.svg" alt="Форум Движение">
+    <img class="logo-ms" src="assets/logo-mediasfera.png" alt="Медиасфера">
+  </div>
+
+  <div class="inner">
+    <span class="eyebrow kicker">только практика · только хардкор</span>
+    <h1 class="big">Как легко и без заморочек собрать <span class="o">AI-сотрудника</span> в команду под любую задачу и&nbsp;процесс</h1>
+    <div class="slogan">
+      <span class="no">NO SLIDES</span>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">01</span><span>листай ↓</span></div>
+</section>
+
+<!-- ===================== 02 · SPEAKER ===================== -->
+<section class="screen" id="s2">
+  <div class="glow" style="width:1000px;height:1000px;left:-8%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="grid">
+      <div class="figwrap"><img class="figure" src="assets/timur-speaker-cut.png" alt="Тимур Угулава"></div>
+      <div>
+        <span class="eyebrow">Обо мне</span>
+        <h1 class="big">Тимур Угулава</h1>
+        <ul>
+          <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>Руковожу <a class="hl" href="https://www.media-sfera.com/" target="_blank" rel="noopener">Медиасферой</a></span></li>
+          <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>Внедряю <b class="hl">нейроночки</b> в процессы</span></li>
+          <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>Веду <a class="hl" href="https://t.me/+z7t-uQJfP-U4MDYy" target="_blank" rel="noopener">«Тимур Угулава»</a> в тележке</span></li>
+          <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>Консультирую и обучаю <b class="hl">про ИИ</b></span></li>
+          <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>Блогерствую <a class="hl" href="https://dzen.ru/smart_travels" target="_blank" rel="noopener">про тревел</a> восьмой год</span></li>
+          <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg><span>Беру интервью у <a class="hl" href="https://www.youtube.com/@bezilluzii" target="_blank" rel="noopener">интересных людей</a></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">02</span><span>обо мне</span></div>
+</section>
+
+<!-- ===================== 03 · PROHOR ===================== -->
+<section class="screen" id="s3">
+  <div class="glow" style="width:920px;height:920px;left:-6%;top:58%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="grid">
+      <div>
+        <span class="eyebrow">Знакомьтесь</span>
+        <h1 class="big">Это <span class="uline">Прохор<svg viewBox="0 0 320 26" fill="none" preserveAspectRatio="none"><path d="M4 16C70 6 250 4 316 12" stroke="#fe9901" stroke-width="7" stroke-linecap="round"/></svg></span></h1>
+        <p class="lead">Маркетолог-нейросотрудник для рынка недвижимости. Знает квартирографию, эскроу, ДДУ, стадии стройки и <span class="hl">214-ФЗ</span>.</p>
+        <p class="lead">Спорит и отстаивает своё мнение, если решение слабое. <span class="hl">Дружелюбен, но на шею себе сесть не даст.</span></p>
+        <p class="lead">Изучает рынок и пишет рекламные стратегии под ключ: <span class="hl">от аудита до креатива.</span></p>
+      </div>
+      <div class="figwrap">
+        <img class="figure base" src="assets/prohor-hero-cut.png" alt="Прохор">
+        <img class="figure smile" src="assets/prohor-hero-smile-cut.png" alt="Прохор улыбается">
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">03</span><span>герой</span></div>
+</section>
+
+<!-- ===================== 04 · PIPELINE ===================== -->
+<section class="screen" id="s4">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-10%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head">
+      <span class="eyebrow">Что делает Прохор</span>
+      <h1 class="big">Кампания под ключ<br><span class="o">5 этапов</span></h1>
+    </div>
+    <div class="carousel" id="carousel">
+      <div class="cstep"><div class="n">1</div><h3>Анализ объекта</h3><p>Паспорт объекта и реальные конкуренты</p><div class="out">→ кто продаётся рядом прямо сейчас</div></div>
+      <div class="cstep"><div class="n">2</div><h3>Аудитория</h3><p>Сегменты ЦА, триггеры, барьеры</p><div class="out">→ темп продаж и приоритет сегментов</div></div>
+      <div class="cstep"><div class="n">3</div><h3>Концепция</h3><p>Уникальный tone of voice и отстройка от конкурентов</p><div class="out">→ стержень и ключевые сообщения</div></div>
+      <div class="cstep"><div class="n">4</div><h3>Тексты</h3><p>Объявления + проверка модерации и 214-ФЗ</p><div class="out">→ готово к запуску, юрчек пройден</div></div>
+      <div class="cstep"><div class="n">5</div><h3>Визуалы</h3><p>Генерация под форматы площадок</p><div class="out">→ баннеры 1:1, 4:5, 9:16, 16:9</div></div>
+    </div>
+    <div class="cnav">
+      <button onclick="cmove(-1)" aria-label="предыдущий">◄</button>
+      <div class="cdots" id="cdots"></div>
+      <button onclick="cmove(1)" aria-label="следующий">►</button>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">04</span><span>пайплайн</span></div>
+</section>
+
+<!-- ===================== 05 · PROMPT vs SKILL ===================== -->
+<section class="screen" id="s5" data-state="skill">
+  <div class="glow" style="width:1000px;height:1000px;right:-6%;bottom:-20%"></div>
+  <div class="inner">
+    <div class="head">
+      <span class="eyebrow">В чём разница</span>
+      <h1 class="big">Промпт или <span style="color:var(--orange)">скилл</span>?</h1>
+    </div>
+    <div class="toggle">
+      <button id="bp" onclick="setVS('prompt')">Промпт</button>
+      <button id="bs" class="act" onclick="setVS('skill')">Скилл</button>
+    </div>
+    <div class="def s" id="vsdef"><span class="tag">Скилл —</span>адаптивный сотрудник-профессионал с постоянным ростом компетенций</div>
+    <table>
+      <tr><td class="lbl">Память</td><td class="cp"><span class="ic">—</span>Контекст перегружен ненужной информацией</td><td class="cs"><span class="ic">✓</span>Подгружается только то, что нужно в моменте</td></tr>
+      <tr><td class="lbl">Универсальность</td><td class="cp"><span class="ic">—</span>Строго под одну задачу</td><td class="cs"><span class="ic">✓</span>Легко перестраивается</td></tr>
+      <tr><td class="lbl">Возможности</td><td class="cp"><span class="ic">—</span>Ограничен чатом</td><td class="cs"><span class="ic">✓</span>Дружит с сервисами и скриптами</td></tr>
+      <tr><td class="lbl">Автоматизация</td><td class="cp"><span class="ic">—</span>Копировать / вставить</td><td class="cs"><span class="ic">✓</span>Полноценный ассистент с субагентами</td></tr>
+    </table>
+  </div>
+  <div class="slidemark"><span class="num">05</span><span>скилл vs промпт</span></div>
+</section>
+
+<!-- ===================== 06 · UNDER THE HOOD ===================== -->
+<section class="screen" id="s6">
+  <div class="glow" style="width:900px;height:900px;left:-10%;top:30%"></div>
+  <div class="inner">
+    <div class="head">
+      <span class="eyebrow">Под капотом</span>
+      <h1 class="big">Прохор — это <span class="o">22 файла</span>,<br>а не один промпт</h1>
+      <p class="sub">Claude грузит только диспетчер <b>~100 токенов</b>. Остальное подтягивает по запросу — поэтому не захлёбывается на масштабе.</p>
+    </div>
+    <div class="ide">
+      <div class="tree" id="tree"></div>
+      <div class="detail">
+        <div class="fname" id="dname">SKILL.md</div>
+        <div class="ftype" id="dtype">Диспетчер</div>
+        <div class="fdesc" id="ddesc">Точка входа. Маршрутизирует: какой файл прочитать под текущую задачу. Грузится первым, держит общую логику.</div>
+        <div class="counter">
+          <div class="c">9<span>references</span></div>
+          <div class="c">8<span>library</span></div>
+          <div class="c">22<span>всего файлов</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">06</span><span>под капотом</span></div>
+</section>
+
+<!-- ===================== 07 · 3 ПУТИ (клик-прорастание) ===================== -->
+<section class="screen" id="s7">
+  <div class="glow" style="width:900px;height:900px;left:50%;top:-14%;transform:translateX(-50%)"></div>
+  <div class="inner">
+    <div class="head">
+      <span class="eyebrow">Как создавать</span>
+      <h1 class="big">Как рождается скилл<br><span class="o">3 пути</span></h1>
+      <div class="hint">▶ кликни на путь — шаги прорастают по очереди</div>
+    </div>
+    <div class="ways">
+      <div class="way" onclick="this.classList.toggle('open')"><div class="n">1</div><h3>Базовый</h3><div class="tag">с нуля</div><ul><li>Создаёшь скилл на холодную</li><li>Работаешь с агентом вживую</li><li>«Туда не лезь, делай вот так»</li></ul></div>
+      <div class="way" onclick="this.classList.toggle('open')"><div class="n">2</div><h3>Опытный</h3><div class="tag">из сессии</div><ul><li>Решаешь конкретную задачу</li><li>Допиливаешь до идеала</li><li>Skill Creator делает скилл</li></ul></div>
+      <div class="way" onclick="this.classList.toggle('open')"><div class="n">3</div><h3>Исследовательский</h3><div class="tag">сначала research</div><ul><li>Нейросеть собирает знания</li><li>На этой базе строишь скилл</li><li>Дорабатываешь до состояния</li></ul></div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">07</span><span>как создавать</span></div>
+</section>
+
+<!-- ===================== 08 · ДАВИД (кто) ===================== -->
+<section class="screen" id="sd1">
+  <div class="glow" style="width:920px;height:920px;left:-6%;top:58%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="grid">
+      <div>
+        <span class="eyebrow">Зачем один?</span>
+        <h1 class="big">Один Прохор — мало.<br>Знакомьтесь: <span class="o">Давид</span></h1>
+        <div class="sub">Это Давид — SMMщик Прохора.</div>
+        <p class="lead">Забирает у Прохора рекламную стратегию,<br>изучает конкурентов (ToV и лучшие посты)<br>и делает забойные посты в тележку <span class="hl">(ну или в MAX)</span></p>
+      </div>
+      <div class="figwrap"><img class="figure" src="assets/david-hero-cut.png" alt="Давид"></div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">08</span><span>армия ассистентов</span></div>
+</section>
+
+<!-- ===================== 09 · ДАВИД (как создать) ===================== -->
+<section class="screen" id="sd2">
+  <div class="glow" style="width:1000px;height:1000px;right:-4%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="head">
+      <span class="eyebrow">Как создать</span>
+      <h1 class="big">Как собрать <span class="o">Давида</span></h1>
+    </div>
+    <div class="promptbox">
+      <div class="plabel">промпт для архитектора</div>
+      <p>Создай AI-ассистента <b>Давида</b> — SMM-помощника Прохора для официального канала девелопера.</p>
+      <p style="margin-top:18px">Давид должен: забирать <span class="hl">рекламную стратегию у Прохора</span>, готовить контент-план под объект, писать посты в голосе бренда, <span class="hl">анализировать конкурентов по реакциям и ER</span>, перенимать tone-of-voice нужного канала.</p>
+    </div>
+    <div class="arch">Соберём через <span class="hl">Skill Architect</span> — мой скилл-конструктор ассистентов</div>
+  </div>
+  <div class="slidemark"><span class="num">09</span><span>как создать</span></div>
+</section>
+
+<!-- ===================== 10 · CTA ===================== -->
+<section class="screen" id="s8">
+  <div class="glow" style="width:1000px;height:1000px;right:2%;top:50%;transform:translateY(-50%)"></div>
+  <div class="inner">
+    <div class="grid">
+      <div class="figwrap"><img class="figure" src="assets/prohor-happy-cut.png" alt="Прохор"></div>
+      <div>
+        <span class="eyebrow">Осталось только повторить!</span>
+        <h1 class="big" style="margin-top:22px">Создайте своего <span class="o">Прохора</span></h1>
+        <div class="qrwrap">
+          <div class="qr"><img src="assets/qr.png" alt="QR"></div>
+          <div class="cta-sub">Забирайте <span class="o">Skill Architect</span><br>и делайте свою армию спецов</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slidemark"><span class="num">10</span><span>финал</span></div>
+</section>
+
+<script>
+/* ---------- toggle 05 ---------- */
+function setVS(state){
+  var s=document.getElementById('s5');
+  s.dataset.state=state;
+  var def=document.getElementById('vsdef');
+  document.getElementById('bp').classList.toggle('act',state==='prompt');
+  document.getElementById('bp').classList.toggle('p',state==='prompt');
+  document.getElementById('bs').classList.toggle('act',state==='skill');
+  if(state==='prompt'){def.className='def p';def.innerHTML='<span class="tag">Промпт —</span>разовая инструкция, узконацеленная на решение одной задачи';}
+  else{def.className='def s';def.innerHTML='<span class="tag">Скилл —</span>адаптивный сотрудник-профессионал с постоянным ростом компетенций';}
+}
+
+/* ---------- file tree 06 ---------- */
+var TREE=[
+  {f:'SKILL.md',t:'Диспетчер',d:'Точка входа. Маршрутизирует: какой файл прочитать под текущую задачу. Грузится первым, держит общую логику.'},
+  {dir:'references/ — поведение и процедуры',kids:[
+    {f:'character-voice.md',t:'references',d:'Психология и тон Прохора: как спорит, профжаргон, режим «Челлендж».'},
+    {f:'communication-style.md',t:'references',d:'Дисциплина диалога и словарь токенов доверия — без них ни одно число не выходит наружу.'},
+    {f:'pipeline.md',t:'references',d:'Полные процедуры 4 этапов: аудитория, концепция, тексты, визуалы. Расчёт темпа продаж.'},
+    {f:'modes.md',t:'references',d:'Режимы входа: бриф, ссылка на объект, название+адрес, демо.'},
+    {f:'moderation-rules.md',t:'references',d:'Антимодерация площадок + юрфильтр 214-ФЗ. «Красное → зелёное» без потери драйва.'},
+    {f:'image-generation.md',t:'references',d:'Роутинг моделей: Nano Banana vs GPT Image 2 — что чем рисовать.'},
+    {f:'research-actualization.md',t:'references',d:'Шаблоны живого WebSearch: свежие бенчмарки, кейсы, тренды со ссылками.'},
+    {f:'output-templates.md',t:'references',d:'Шаблоны вывода каждого этапа и финальной аудит-стены.'},
+    {f:'demo-mode.md',t:'references',d:'Сценический режим: партитура, двойной буфер, дуэль моделей, Q&A.'},
+  ]},
+  {dir:'library/ — данные рынка',kids:[
+    {f:'audiences.yaml',t:'library',d:'Сегменты ЦА × тип объекта: триггеры, барьеры, JTBD.'},
+    {f:'benchmarks.yaml',t:'library',d:'Бенчмарки CPL/CPC/CPM со ссылками и датой актуализации.'},
+    {f:'funnels.yaml',t:'library',d:'Воронки первички с лагами эскроу/ДДУ по типам объектов.'},
+    {f:'channels/performance.yaml',t:'library',d:'Каналы перформанса: Яндекс Директ, VK Ads, MyTarget.'},
+    {f:'channels/social.yaml',t:'library',d:'Соцсети и мессенджеры: VK SMM, Telegram, Дзен.'},
+    {f:'channels/classified.yaml',t:'library',d:'Классифайды: Авито, Циан, Домклик, Яндекс Недвижимость.'},
+    {f:'channels/brand-offline.yaml',t:'library',d:'Brand и офлайн: DOOH, наружка, ТВ, радио, инфлюенс.'},
+    {f:'channels/commercial-b2b-hospitality.yaml',t:'library',d:'B2B-каналы для БЦ, складов, гостиниц (ранний контур).'},
+  ]},
+  {dir:'prompts/ — шаблоны визуалов',kids:[
+    {f:'creative-prompts.md',t:'prompts',d:'Промпт-шаблоны генерации визуалов под недвижимость, включая кириллический постер.'},
+  ]},
+  {dir:'scripts/ — автоматизация',kids:[
+    {f:'export_docx.py',t:'scripts',d:'Рендер MD-артефактов в фирменный .docx: оранжевый #FE9901, зебра, вставка картинок.'},
+  ]},
+  {dir:'examples/ — готовые кейсы',kids:[
+    {f:'case-zhk-comfort.md',t:'examples',d:'Полный сквозной кейс ЖК комфорт-класса.'},
+    {f:'demo-session-b15/SCENARIO.md',t:'examples',d:'Готовый боевой демо-сценарий реального ЖК «Б15».'},
+  ]},
+];
+function showDetail(o){
+  document.getElementById('dname').textContent=o.f;
+  document.getElementById('dtype').textContent=o.t;
+  document.getElementById('ddesc').textContent=o.d;
+  document.querySelectorAll('#tree .node.file').forEach(function(n){n.classList.remove('sel')});
+}
+(function buildTree(){
+  var tree=document.getElementById('tree');
+  TREE.forEach(function(item){
+    if(item.f){
+      var n=document.createElement('div');n.className='node file';n.innerHTML='<span class="ico">📄</span>'+item.f;
+      n.onclick=function(){showDetail(item);n.classList.add('sel')};tree.appendChild(n);
+    }else{
+      var d=document.createElement('div');d.className='node dir';d.innerHTML='<span class="ico">▸</span>'+item.dir;
+      var kids=document.createElement('div');kids.className='kids closed';
+      d.onclick=function(){kids.classList.toggle('closed');d.querySelector('.ico').textContent=kids.classList.contains('closed')?'▸':'▾'};
+      d.querySelector('.ico').textContent='▸';
+      item.kids.forEach(function(k){
+        var fn=document.createElement('div');fn.className='node file';fn.innerHTML='<span class="ico">📄</span>'+k.f;
+        fn.onclick=function(){showDetail(k);fn.classList.add('sel')};kids.appendChild(fn);
+      });
+      tree.appendChild(d);tree.appendChild(kids);
+    }
+  });
+})();
+
+/* ---------- carousel s4 ---------- */
+var ci=0;
+var csteps=[].slice.call(document.querySelectorAll('#s4 .cstep'));
+var cdots=document.getElementById('cdots');
+csteps.forEach(function(s,i){
+  var d=document.createElement('i');d.onclick=function(){ci=i;renderCar()};cdots.appendChild(d);
+  s.addEventListener('click',function(){ci=i;renderCar()});
+});
+var cdotEls=[].slice.call(cdots.children);
+function renderCar(){
+  csteps.forEach(function(s,i){
+    var off=i-ci,a=Math.abs(off);
+    var sc=a===0?1:(a===1?0.8:0.7);
+    var op=a===0?1:(a===1?0.5:0);
+    s.style.transform='translate(-50%,-50%) translateX('+(off*474)+'px) scale('+sc+')';
+    s.style.opacity=op;s.style.zIndex=10-a;s.style.pointerEvents=a>2?'none':'auto';
+    s.classList.toggle('active',off===0);
+    if(cdotEls[i])cdotEls[i].classList.toggle('on',off===0);
+  });
+}
+function cmove(d){ci=Math.max(0,Math.min(csteps.length-1,ci+d));renderCar()}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'){e.preventDefault();cmove(1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();cmove(-1)}
+});
+renderCar();
+
+/* ---------- dots nav + keyboard ---------- */
+var screens=[].slice.call(document.querySelectorAll('.screen'));
+var dots=document.getElementById('dots');
+screens.forEach(function(s,i){var a=document.createElement('a');a.href='#'+s.id;dots.appendChild(a)});
+var dotEls=[].slice.call(dots.children);
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
+  var i=screens.indexOf(e.target);dotEls.forEach(function(d,j){d.classList.toggle('on',j===i)});
+}})},{threshold:.5});
+screens.forEach(function(s){io.observe(s)});
+function cur(){var best=0,bd=1e9;for(var i=0;i<screens.length;i++){var d=Math.abs(screens[i].offsetTop-window.scrollY);if(d<bd){bd=d;best=i}}return best}
+function go(n){n=Math.max(0,Math.min(screens.length-1,n));window.scrollTo({top:screens[n].offsetTop,behavior:'smooth'})}
+var navLock=false;
+document.addEventListener('keydown',function(e){
+  if(['ArrowDown','PageDown',' '].indexOf(e.key)>=0){e.preventDefault();if(navLock)return;navLock=true;go(cur()+1);setTimeout(function(){navLock=false},520)}
+  if(['ArrowUp','PageUp'].indexOf(e.key)>=0){e.preventDefault();if(navLock)return;navLock=true;go(cur()-1);setTimeout(function(){navLock=false},520)}
+});
+</script>
+</body>
+</html>
