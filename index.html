@@ -84,12 +84,25 @@ h1.big{font-family:'Unbounded';font-weight:800;line-height:.98;letter-spacing:-.
 #s2 li a.hl:hover{text-decoration:underline}
 
 /* ============ S3 · PROHOR ============ */
-#s3 .grid{display:grid;grid-template-columns:1.05fr .85fr;gap:36px;align-items:center}
-#s3 .figwrap{position:relative;height:88vh;max-height:920px;order:2;cursor:pointer}
-#s3 .figwrap img{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:auto;object-fit:contain;transition:opacity .45s ease}
-#s3 .figwrap .smile{opacity:0}
-#s3 .figwrap:hover .base{opacity:0}
-#s3 .figwrap:hover .smile{opacity:1}
+#s3 .grid{display:grid;grid-template-columns:1.05fr .85fr;gap:36px;align-items:stretch}
+#s3 .figwrap{position:relative;order:2}
+/* живой Прохор в рамке-сторис: высота = высоте текстового блока (верх «Знакомьтесь» → низ «от аудита до креатива») */
+.vframe{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:auto;aspect-ratio:9/16;border-radius:28px;overflow:hidden;background:#000;
+  border:1.5px solid rgba(254,153,1,.5);
+  box-shadow:0 24px 60px rgba(0,0,0,.6), 0 0 64px rgba(254,153,1,.15), inset 0 0 0 1px rgba(0,0,0,.45)}
+.vframe video{width:100%;height:100%;object-fit:cover;display:block}
+.vplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;border:none;
+  background:rgba(254,153,1,.94);color:#0a0a0b;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;
+  box-shadow:0 10px 34px rgba(0,0,0,.5);transition:opacity .25s ease,transform .25s ease}
+.vplay svg{width:28px;height:28px;margin-left:3px}
+.vframe.playing .vplay{opacity:0;transform:translate(-50%,-50%) scale(.6);pointer-events:none}
+.vsound{position:absolute;right:13px;bottom:13px;width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.18);background:rgba(10,10,11,.55);
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:.2s;z-index:4}
+.vsound svg{width:20px;height:20px}
+.vsound:hover{background:var(--orange);color:#0a0a0b;border-color:var(--orange)}
+.mobonly{display:none}  /* отдельный видео-экран — только мобайл */
 #s3 h1{font-size:104px;margin:24px 0 0}
 #s3 .lead{margin-top:38px;font-size:25px;line-height:1.5;color:#cfcdc7;font-weight:500;max-width:680px}
 #s3 .lead+.lead{margin-top:22px}
@@ -222,6 +235,180 @@ h1.big{font-family:'Unbounded';font-weight:800;line-height:.98;letter-spacing:-.
 #s8 .cta-sub{font-size:27px;line-height:1.4;color:#cfcdc7;font-weight:600}
 #s8 .cta-sub .o{color:var(--orange);font-weight:700}
 #s8 .chan{margin-top:10px;font-family:'Unbounded';font-weight:700;font-size:19px;color:#fff;line-height:1.5}
+/* кликабельная ссылка-дублёр QR (для телефона, где QR со своего же экрана не отсканировать) */
+.tg-btn{display:none;align-items:center;gap:13px;background:var(--orange);color:#0a0a0b;
+  font-family:'Unbounded';font-weight:700;font-size:19px;letter-spacing:.005em;white-space:nowrap;
+  padding:18px 30px;border-radius:18px;text-decoration:none;
+  box-shadow:0 18px 46px rgba(254,153,1,.34);transition:transform .14s ease,box-shadow .14s ease}
+.tg-btn:active{transform:scale(.97)}
+.tg-btn svg{width:24px;height:24px;flex:none}
+
+/* ===================================================================== */
+/* ===== АДАПТИВ (десктопный CSS выше не трогаем; всё узкое — здесь) ==== */
+/* ===================================================================== */
+
+/* планшет-ландшафт / узкий ноут: только поджать поля и самые крупные титулы */
+@media (max-width:1240px){
+  :root{--pad:72px}
+  #s3 h1{font-size:88px}
+  #s2 h1{font-size:76px}
+  #sd1 h1{font-size:66px}
+  #s2 .figwrap,#s3 .figwrap,#sd1 .figwrap{height:80vh}
+}
+
+/* ГЛАВНЫЙ брейк — планшет-портрет и телефоны: всё в одну колонку */
+@media (max-width:960px){
+  html{scroll-snap-type:none}
+  :root{--pad:40px}
+
+  .screen{min-height:100svh;height:auto;align-items:flex-start;padding:94px var(--pad) 76px}
+  .inner{max-width:660px}
+  .dots{right:15px;gap:11px}
+  .doodle{display:none}            /* декор-каракули на узком экране лезут на текст — прячем */
+  .mobonly{display:flex}           /* отдельный видео-экран Прохора — показываем */
+
+  /* логотипы / номер слайда */
+  .logos{top:30px}
+  .logos .logo-dv{height:40px}
+  .logos .logo-ms{height:25px}
+  .slidemark{bottom:24px;font-size:12px}
+  .slidemark .num{font-size:15px}
+
+  /* ---- s1 титул ---- */
+  #s1{align-items:center;justify-content:center;padding-top:120px}
+  #s1 h1{font-size:clamp(30px,7.2vw,54px)}
+  #s1 .kicker{margin-bottom:22px}
+  #s1 .slogan{margin-top:36px;padding:13px 24px}
+  #s1 .slogan .no{font-size:18px}
+  #s1 .slogan .rest{font-size:15px}
+
+  /* ---- общие двухколоночные → одна колонка ---- */
+  #s2 .grid,#s3 .grid,#sd1 .grid,#s8 .grid{grid-template-columns:1fr;gap:24px}
+  #s2 .figwrap,#s3 .figwrap,#sd1 .figwrap,#s8 .figwrap{
+    display:flex;align-items:center;justify-content:center;max-height:none}
+
+  /* ---- s2 спикер: фото убираем, текст уходит наверх экрана ---- */
+  #s2 .figwrap{display:none}
+  #s2 h1{font-size:42px;margin:6px 0 20px}
+  #s2 ul{gap:13px}
+  #s2 li{font-size:18px;gap:13px}
+  #s2 li .ck{width:23px;height:23px}
+
+  /* ---- s3 на мобайле: только текст (видео уехало на s3v) ---- */
+  #s3 .figwrap{display:none}
+  #s3 h1{font-size:58px;margin:8px 0 0}
+
+  /* ---- s3v: отдельный мобильный экран — крупное видео ---- */
+  #s3v{align-items:center}
+  #s3v .inner{display:flex;flex-direction:column;align-items:center;text-align:center}
+  #s3v .eyebrow{margin-bottom:4px}
+  #s3v .vstage{margin-top:20px;display:flex;justify-content:center;width:100%}
+  #s3v .vframe{position:relative;top:auto;bottom:auto;left:auto;transform:none;width:80vw;max-width:360px;height:auto;aspect-ratio:9/16;border-radius:26px}
+  #s3v .vplay{width:64px;height:64px}
+  #s3v .vplay svg{width:26px;height:26px}
+  #s3v .vsound{width:42px;height:42px;right:11px;bottom:11px}
+  #s3v .vsound svg{width:18px;height:18px}
+  #s3v .vhint{margin-top:18px;font-size:14px;color:var(--mut);font-weight:600}
+  #s3 .lead{font-size:18px;margin-top:22px;max-width:none}
+  #s3 .lead+.lead{margin-top:15px}
+  #s3 .terms{margin-top:26px}
+  #s3 .terms .pill{font-size:14px}
+
+  /* ---- s4 карусель ---- */
+  #s4 h1{font-size:40px}
+  #s4 .carousel{height:62svh;min-height:400px;margin-top:12px}
+  #s4 .cstep{width:min(78vw,440px);padding:30px 26px}
+  #s4 .cstep .n{width:52px;height:52px;font-size:22px;margin-bottom:18px}
+  #s4 .cstep h3{font-size:25px;margin-bottom:12px}
+  #s4 .cstep p{font-size:18px}
+  #s4 .cstep .out{font-size:16px}
+  #s4 .cnav{margin-top:16px;gap:20px}
+  #s4 .cnav button{width:46px;height:46px;font-size:18px}
+
+  /* ---- s5 таблица: показываем только активную колонку (lbl + выбранная) ---- */
+  #s5 h1{font-size:42px}
+  #s5 .head{margin-bottom:16px}
+  #s5 .toggle{margin:14px 0 18px}
+  #s5 .toggle button{font-size:15px;padding:11px 22px}
+  #s5 .def{font-size:18px;min-height:0;margin-bottom:16px}
+  #s5 td{padding:13px 12px;font-size:16px}
+  #s5 .lbl{font-size:14px;width:38%}
+  #s5 .cp,#s5 .cs{width:auto}
+  #s5[data-state="skill"] .cp{display:none}
+  #s5[data-state="prompt"] .cs{display:none}
+  #s5[data-state="skill"] .cs,#s5[data-state="prompt"] .cp{opacity:1}
+
+  /* ---- s6 IDE-проводник в одну колонку ---- */
+  #s6 h1{font-size:40px}
+  #s6 .head{margin-bottom:22px}
+  #s6 .sub{font-size:17px;margin-top:14px}
+  #s6 .ide{grid-template-columns:1fr;height:auto;min-height:0}
+  #s6 .tree{border-right:none;border-bottom:1px solid var(--line);max-height:30svh;font-size:14px}
+  #s6 .detail{padding:26px 24px}
+  #s6 .detail .fname{font-size:20px}
+  #s6 .detail .ftype{margin-bottom:18px}
+  #s6 .detail .fdesc{font-size:18px}
+  #s6 .counter{margin-top:18px;gap:26px}
+  #s6 .counter .c{font-size:24px}
+
+  /* ---- s7 три пути → стопка; на тач шаги показываем сразу ---- */
+  #s7 h1{font-size:40px}
+  #s7 .head{margin-bottom:24px}
+  #s7 .ways{grid-template-columns:1fr;gap:16px}
+  #s7 .way{padding:26px 24px}
+  #s7 .way .n{width:50px;height:50px;font-size:22px;margin-bottom:16px}
+  #s7 .way h3{font-size:24px}
+  #s7 .way .tag{margin-bottom:0}
+  /* интерактив сохраняем: закрытая карточка компактна, по тапу список раскрывается + шаги прорастают */
+  #s7 .way ul{min-height:0;max-height:0;overflow:hidden;transition:max-height .45s ease}
+  #s7 .way.open ul{max-height:360px;margin-top:24px}
+
+  /* ---- sd1 Давид ---- */
+  #sd1 .figwrap{height:34svh;order:-1}
+  #sd1 .figwrap img{height:100%}
+  #sd1 h1{font-size:46px}
+  #sd1 .sub{font-size:21px;margin-top:22px}
+  #sd1 .lead{font-size:18px;margin-top:16px;max-width:none}
+
+  /* ---- sd2 промпт-бокс ---- */
+  #sd2 h1{font-size:42px}
+  #sd2 .head{margin-bottom:26px}
+  #sd2 .promptbox{padding:32px 24px}
+  #sd2 .promptbox p{font-size:18px}
+  #sd2 .arch{font-size:17px;margin-top:22px}
+
+  /* ---- s8 финал: QR не нужен (со своего экрана не сканируется) → крупная кнопка-ссылка ---- */
+  #s8 .figwrap{height:26svh;order:2}
+  #s8 .figwrap img{height:100%}
+  #s8 h1{font-size:46px}
+  #s8 .qr{display:none}
+  #s8 .qrwrap{margin-top:22px}
+  #s8 .cta-sub{font-size:19px}
+  #s8 .tg-btn{display:inline-flex;margin-top:22px}
+  #s8 .chan{font-size:16px}
+}
+
+/* ТЕЛЕФОН — ещё компактнее */
+@media (max-width:540px){
+  :root{--pad:18px}
+  .dots{display:none}
+  .screen{padding:78px var(--pad) 62px}
+
+  .logos .logo-dv{height:34px}
+  .logos .logo-ms{height:21px}
+
+  #s1 h1{font-size:clamp(25px,7.8vw,40px)}
+  #s2 .figwrap{height:25svh}
+  #s2 h1{font-size:36px}
+  #s3 .figwrap,#sd1 .figwrap{height:29svh}
+  #s3 h1{font-size:46px}
+  #s4 .cstep{width:min(84vw,420px);padding:26px 22px}
+  #s4 .cstep h3{font-size:23px}
+  #s5 h1,#s6 h1,#s7 h1,#sd2 h1{font-size:36px}
+  #sd1 h1,#s8 h1{font-size:40px}
+  #s8 .qrwrap{flex-direction:column;align-items:flex-start;gap:18px}
+  #s8 .qr{width:188px;height:188px}
+}
 </style>
 </head>
 <body>
@@ -285,13 +472,25 @@ h1.big{font-family:'Unbounded';font-weight:800;line-height:.98;letter-spacing:-.
         <p class="lead">Спорит и отстаивает своё мнение, если решение слабое. <span class="hl">Дружелюбен, но на шею себе сесть не даст.</span></p>
         <p class="lead">Изучает рынок и пишет рекламные стратегии под ключ: <span class="hl">от аудита до креатива.</span></p>
       </div>
-      <div class="figwrap">
-        <img class="figure base" src="assets/prohor-hero-cut.png" alt="Прохор">
-        <img class="figure smile" src="assets/prohor-hero-smile-cut.png" alt="Прохор улыбается">
+      <div class="figwrap" id="figSlot">
+        <div class="vframe">
+          <video id="proVid" src="assets/prohor-talk.mp4" muted loop playsinline preload="auto" poster="assets/prohor-poster.jpg"></video>
+          <button class="vplay" id="vPlay" type="button" aria-label="Воспроизвести"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg></button>
+          <button class="vsound" id="vSound" type="button" title="Включить звук" aria-label="Включить звук"></button>
+        </div>
       </div>
     </div>
   </div>
   <div class="slidemark"><span class="num">03</span><span>герой</span></div>
+</section>
+
+<!-- ============ 03b · ЖИВОЙ ПРОХОР (только мобайл) ============ -->
+<section class="screen mobonly" id="s3v">
+  <div class="glow" style="width:760px;height:760px;left:50%;top:42%;transform:translate(-50%,-50%)"></div>
+  <div class="inner">
+    <span class="eyebrow">Привет, я Прохор.</span>
+    <div class="vstage" id="figSlotM"></div>
+  </div>
 </section>
 
 <!-- ===================== 04 · PIPELINE ===================== -->
@@ -433,6 +632,10 @@ h1.big{font-family:'Unbounded';font-weight:800;line-height:.98;letter-spacing:-.
           <div class="qr"><img src="assets/qr.png" alt="QR"></div>
           <div class="cta-sub">Забирайте <span class="o">Skill Architect</span><br>и делайте свою армию спецов</div>
         </div>
+        <a class="tg-btn" href="https://t.me/+z7t-uQJfP-U4MDYy" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.31l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+          <span>Открыть в Telegram</span>
+        </a>
       </div>
     </div>
   </div>
@@ -522,12 +725,15 @@ csteps.forEach(function(s,i){
   s.addEventListener('click',function(){ci=i;renderCar()});
 });
 var cdotEls=[].slice.call(cdots.children);
+/* шаг = реальная ширина активной карточки + зазор (адаптивно подхватывает vw-ширину) */
+function carShift(){var w=csteps[0]?csteps[0].offsetWidth:442;var g=window.innerWidth<=960?16:32;return w+g;}
 function renderCar(){
+  var shift=carShift();
   csteps.forEach(function(s,i){
     var off=i-ci,a=Math.abs(off);
     var sc=a===0?1:(a===1?0.8:0.7);
     var op=a===0?1:(a===1?0.5:0);
-    s.style.transform='translate(-50%,-50%) translateX('+(off*474)+'px) scale('+sc+')';
+    s.style.transform='translate(-50%,-50%) translateX('+(off*shift)+'px) scale('+sc+')';
     s.style.opacity=op;s.style.zIndex=10-a;s.style.pointerEvents=a>2?'none':'auto';
     s.classList.toggle('active',off===0);
     if(cdotEls[i])cdotEls[i].classList.toggle('on',off===0);
@@ -538,10 +744,20 @@ document.addEventListener('keydown',function(e){
   if(e.key==='ArrowRight'){e.preventDefault();cmove(1)}
   if(e.key==='ArrowLeft'){e.preventDefault();cmove(-1)}
 });
+window.addEventListener('resize',renderCar);
+/* тач-свайп по карусели (для телефона/планшета) */
+(function(){var car=document.getElementById('carousel'),x0=null;
+  car.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  car.addEventListener('touchend',function(e){
+    if(x0==null)return;var dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>40)cmove(dx<0?1:-1);x0=null;
+  },{passive:true});
+})();
 renderCar();
 
 /* ---------- dots nav + keyboard ---------- */
-var screens=[].slice.call(document.querySelectorAll('.screen'));
+var allScreens=[].slice.call(document.querySelectorAll('.screen'));
+var screens=allScreens.filter(function(s){return getComputedStyle(s).display!=='none'});
 var dots=document.getElementById('dots');
 screens.forEach(function(s,i){var a=document.createElement('a');a.href='#'+s.id;dots.appendChild(a)});
 var dotEls=[].slice.call(dots.children);
@@ -556,6 +772,47 @@ document.addEventListener('keydown',function(e){
   if(['ArrowDown','PageDown',' '].indexOf(e.key)>=0){e.preventDefault();if(navLock)return;navLock=true;go(cur()+1);setTimeout(function(){navLock=false},520)}
   if(['ArrowUp','PageUp'].indexOf(e.key)>=0){e.preventDefault();if(navLock)return;navLock=true;go(cur()-1);setTimeout(function(){navLock=false},520)}
 });
+
+/* ---------- видео-Прохор s3 (рамка): старт по наведению/тапу + тумблер звука ---------- */
+(function(){
+  var v=document.getElementById('proVid'), sBtn=document.getElementById('vSound'),
+      pBtn=document.getElementById('vPlay'), frame=document.querySelector('.vframe');
+  if(!v||!frame) return;
+  var ICON_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>';
+  var ICON_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>';
+  if(sBtn) sBtn.innerHTML=ICON_OFF;
+  function syncSnd(){ if(sBtn){ sBtn.innerHTML=v.muted?ICON_OFF:ICON_ON; sBtn.title=v.muted?'Включить звук':'Выключить звук'; } }
+  /* старт — сразу со звуком; если браузер заблокирует (нет ещё жеста) — фолбэк без звука */
+  function playV(){ v.muted=false; var pr=v.play();
+    if(pr&&pr.catch){ pr.catch(function(){ v.muted=true; v.play().catch(function(){}); syncSnd(); }); }
+    syncSnd(); }
+  function pauseV(){ v.pause(); }
+  v.addEventListener('play',function(){ frame.classList.add('playing'); });
+  v.addEventListener('pause',function(){ frame.classList.remove('playing'); });
+  v.addEventListener('volumechange',syncSnd);
+  if(sBtn) sBtn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation();
+    v.muted=!v.muted; syncSnd(); if(!v.muted&&v.paused){ v.play().catch(function(){}); } });
+  if(pBtn) pBtn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); playV(); });
+  /* десктоп — наведение мышью; тач — тап по рамке */
+  if(window.matchMedia('(hover:hover)').matches){
+    frame.addEventListener('mouseenter',playV);
+    frame.addEventListener('mouseleave',pauseV);
+  } else {
+    frame.addEventListener('click',function(){ v.paused?playV():pauseV(); });
+  }
+  /* ушли с экрана — пауза */
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){es.forEach(function(e){ if(!e.isIntersecting)pauseV(); })},{threshold:.3}).observe(frame);
+  }
+  /* рамка переезжает: десктоп — рядом с текстом (s3), мобайл — отдельный экран (s3v) */
+  var slotD=document.getElementById('figSlot'), slotM=document.getElementById('figSlotM');
+  if(slotD&&slotM){
+    var mqv=window.matchMedia('(max-width:960px)');
+    var place=function(){ (mqv.matches?slotM:slotD).appendChild(frame); };
+    place();
+    if(mqv.addEventListener) mqv.addEventListener('change',place); else mqv.addListener(place);
+  }
+})();
 </script>
 </body>
 </html>
